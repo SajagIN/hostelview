@@ -1,0 +1,130 @@
+// HostelView database design (MySQL 8.0). Paste into https://dbdiagram.io to draw the ER diagram.
+// database/schema.sql is the same design written as CREATE TABLE statements.
+
+Enum user_role {
+  visitor
+  student
+  admin
+}
+
+Enum hostel_type {
+  boys
+  girls
+  coed
+}
+
+Enum approval_status {
+  pending
+  approved
+  rejected
+}
+
+Table colleges {
+  college_id integer [primary key, increment]
+  name varchar(150) [not null]
+  city varchar(60) [not null]
+  state varchar(60) [not null]
+  website varchar(150)
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table users {
+  user_id integer [primary key, increment]
+  name varchar(100) [not null]
+  email varchar(150) [unique, not null]
+  password_hash varchar(255) [not null]
+  role user_role [not null, default: 'visitor']
+  college_email varchar(150)
+  is_verified boolean [not null, default: false]
+  college_id integer
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    email [unique, name: 'idx_users_email']
+    college_id [name: 'idx_users_college']
+    role [name: 'idx_users_role']
+  }
+}
+
+Table hostels {
+  hostel_id integer [primary key, increment]
+  college_id integer [not null]
+  name varchar(150) [not null]
+  type hostel_type [not null]
+  address text
+  amenities json [note: 'e.g. {"wifi": true, "gym": true}']
+  avg_rating decimal(2,1) [not null, default: 0.0, note: 'average of approved reviews']
+  submitted_by integer [not null]
+  status approval_status [not null, default: 'pending']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp
+
+  indexes {
+    (college_id, status) [name: 'idx_hostels_college_status']
+    avg_rating [name: 'idx_hostels_rating']
+    submitted_by [name: 'idx_hostels_submitted_by']
+  }
+}
+
+Table rooms {
+  room_id integer [primary key, increment]
+  hostel_id integer [not null]
+  room_type varchar(50) [not null]
+  capacity integer [not null, note: 'students per room']
+  is_ac boolean [not null, default: false]
+  floor_no integer
+  price_per_month decimal(8,2) [not null, note: 'yearly room + mess fee / 12']
+  availability integer [not null, default: 0, note: 'free beds']
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    hostel_id [name: 'idx_rooms_hostel']
+  }
+}
+
+Table photos {
+  photo_id integer [primary key, increment]
+  hostel_id integer [not null]
+  room_id integer [note: 'null = photo of the whole hostel']
+  url varchar(255) [not null]
+  caption varchar(200)
+  uploaded_by integer [not null]
+  status approval_status [not null, default: 'pending']
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (hostel_id, status) [name: 'idx_photos_hostel_status']
+    room_id [name: 'idx_photos_room']
+    uploaded_by [name: 'idx_photos_uploaded_by']
+  }
+}
+
+Table reviews {
+  review_id integer [primary key, increment]
+  hostel_id integer [not null]
+  room_id integer [note: 'null = review of the whole hostel']
+  user_id integer [not null]
+  rating integer [not null, note: '1 to 5']
+  title varchar(150)
+  comment text
+  status approval_status [not null, default: 'pending']
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (hostel_id, status) [name: 'idx_reviews_hostel_status']
+    room_id [name: 'idx_reviews_room']
+    user_id [name: 'idx_reviews_user']
+    rating [name: 'idx_reviews_rating']
+  }
+}
+
+Ref: users.college_id > colleges.college_id [delete: set null, update: cascade]
+Ref: hostels.college_id > colleges.college_id [delete: restrict, update: cascade]
+Ref: hostels.submitted_by > users.user_id [delete: restrict, update: cascade]
+Ref: rooms.hostel_id > hostels.hostel_id [delete: cascade, update: cascade]
+Ref: photos.hostel_id > hostels.hostel_id [delete: cascade, update: cascade]
+Ref: photos.room_id > rooms.room_id [delete: set null, update: cascade]
+Ref: photos.uploaded_by > users.user_id [delete: cascade, update: cascade]
+Ref: reviews.hostel_id > hostels.hostel_id [delete: cascade, update: cascade]
+Ref: reviews.room_id > rooms.room_id [delete: set null, update: cascade]
+Ref: reviews.user_id > users.user_id [delete: cascade, update: cascade]

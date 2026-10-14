@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #115e59;
+  --color-brand-900: #134e4a;
+  --color-brand-950: #042f2e;
+
+  --animate-fade-in: fade-in 0.15s ease-out;
+  --animate-slide-up: slide-up 0.2s ease-out;
+  --animate-toast-in: toast-in 0.25s cubic-bezier(0.21, 1.02, 0.73, 1);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(10px) scale(0.99); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    border-color: var(--color-slate-200, currentColor);
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+  }
+  ::selection {
+    @apply bg-brand-200 text-brand-950;
+  }
+}
+
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap
+      transition-colors duration-150 select-none
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600
+      disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary { @apply bg-brand-700 text-white shadow-sm hover:bg-brand-800; }
+  .btn-secondary { @apply bg-white text-slate-700 shadow-sm ring-1 ring-slate-300 ring-inset hover:bg-slate-50 hover:text-slate-900; }
+  .btn-ghost { @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900; }
+  .btn-danger { @apply bg-rose-600 text-white shadow-sm hover:bg-rose-700; }
+  .btn-danger-soft { @apply bg-rose-50 text-rose-700 ring-1 ring-rose-200 ring-inset hover:bg-rose-100; }
+  .btn-success { @apply bg-emerald-600 text-white shadow-sm hover:bg-emerald-700; }
+  .btn-sm { @apply gap-1.5 rounded-lg px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-5 py-3 text-base; }
+  .btn-icon { @apply p-2; }
+
+  .input {
+    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm
+      ring-1 ring-slate-300 ring-inset placeholder:text-slate-400
+      focus:ring-2 focus:ring-brand-600 focus:outline-none
+      disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500;
+  }
+  .input-error { @apply ring-rose-400 focus:ring-rose-500; }
+  .label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
+  .hint { @apply mt-1.5 text-xs text-slate-500; }
+  .field-error { @apply mt-1.5 text-xs font-medium text-rose-600; }
+
+  .card { @apply rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80; }
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset; }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset transition-colors;
+  }
+  .chip-off { @apply bg-white text-slate-600 ring-slate-300 hover:bg-slate-50 hover:text-slate-900; }
+  .chip-on { @apply bg-brand-700 text-white ring-brand-700; }
+  .link { @apply font-medium text-brand-700 underline-offset-2 hover:text-brand-800 hover:underline; }
+  .section-title { @apply text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl; }
+  .kbd { @apply rounded border border-slate-300 bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-600; }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
