@@ -145,7 +145,7 @@ All foreign keys use `ON UPDATE CASCADE`.
 
 ---
 
-## 7. Demo guide for the database professor
+## 7. Demo guide
 
 Keep two terminals open: `npm start` in one and `npm run sql` in the other. Refresh the browser after a SQL change.
 
@@ -303,18 +303,6 @@ SELECT COUNT(*) FROM reviews WHERE hostel_id = 1;   -- back to 6
 | 21 | `CREATE VIEW` / `DROP VIEW` | a saved per-college summary |
 | 22 | `EXPLAIN` | MySQL using the index `idx_hostels_college_status` |
 
-### 7.9 Likely viva questions
-
-| Question | Short answer |
-|---|---|
-| Why MySQL and not MongoDB? | The data is relational: hostels belong to colleges, rooms to hostels, reviews to users. Foreign keys, constraints and transactions keep it consistent. |
-| How do you stop fake reviews? | Only verified students (college email + OTP) can review, only hostels of their own college, one review per hostel (or room), and every review is moderated. |
-| Why store `avg_rating` if it can be calculated? | Fast sorting and filtering. It's recalculated in the same transaction as the review change, so it's always correct. |
-| What happens when a hostel is deleted? | `ON DELETE CASCADE` removes its rooms, photos and reviews. |
-| How are passwords stored? | bcrypt hashes (`password_hash`), never plain text. |
-| Is the schema normalized? | Yes, to 3NF in practice. The deliberate exceptions are the derived `avg_rating`, and `state` stored next to `city` in `colleges` (a separate cities table isn't worth it for 4 colleges). |
-| How is SQL injection prevented? | Every query uses `?` placeholders. Values are never pasted into the SQL text. |
-
 ---
 
 ## 8. Demo guide for the app (the 7 modules from the report)
@@ -335,7 +323,15 @@ Also show the role rules:
 - The **unverified student** (`vikram.demo@srmist.edu.in`) is asked to verify first.
 - A student **can't add content to another college's hostels**.
 
-Screenshots: [home](docs/screenshots/1-home.jpg) · [explore + filters](docs/screenshots/2-explore.jpg) · [hostel page](docs/screenshots/3-hostel.jpg) · [compare hostels](docs/screenshots/4-compare-hostels.jpg) · [compare colleges](docs/screenshots/5-compare-colleges.jpg) · [OTP verification](docs/screenshots/6-verify-otp.jpg) · [Dev Mailbox](docs/screenshots/7-dev-mailbox.jpg) · [admin moderation](docs/screenshots/8-admin-moderation.jpg)
+Screenshots: 
+![home](docs/screenshots/1-home.jpg) 
+![explore + filters](docs/screenshots/2-explore.jpg) 
+![hostel page](docs/screenshots/3-hostel.jpg) 
+![compare hostels](docs/screenshots/4-compare-hostels.jpg) 
+![compare colleges](docs/screenshots/5-compare-colleges.jpg) 
+![OTP verification](docs/screenshots/6-verify-otp.jpg) 
+![Dev Mailbox](docs/screenshots/7-dev-mailbox.jpg) 
+![admin moderation](docs/screenshots/8-admin-moderation.jpg)
 
 ## 9. How the fake email OTP works
 
